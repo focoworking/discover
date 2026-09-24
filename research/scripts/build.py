@@ -43,10 +43,20 @@ def legal(s):
         if k in u: return v
     return "No verificado"
 
+def municipio(area):
+    if area in BARRIO: return BARRIO[area]
+    m = re.match(r"^(.+?)\s*\((.+)\)$", area)
+    if m:
+        a, b = m.group(1).strip(), m.group(2).strip()
+        if b == "ciudad": return (area, "")
+        if b == "Miami": return ("Miami (ciudad)", a)
+        return (a, "")
+    return ("Miami (ciudad)", "") if area == "Miami" else (area, "")
+
 def size_signals(ev):
     m = re.search(r"~?(\d+)(?:-\d+)?\+?\s*(?:empleados|camiones)", ev)
     emp = int(m.group(1)) if m else None
-    y = re.search(r"(?:Est\.|Desde|desde|Fundada|fundada|Inc\.|Incorporada|registrada \d\d/\d\d/)\s*(19\d\d|20\d\d)", ev)
+    y = re.search(r"(?:Est\.|[Dd]esde|[Ff]undad[ao]|[Ee]stablecid[ao]|[Aa]bierto desde|Inc\.|Incorporada|[Cc]onstituida|[Ii]niciada|registrada \d\d/\d\d/)\s*(?:en\s+|el\s+|~)?(19\d\d|20\d\d)", ev)
     return emp, (int(y.group(1)) if y else None)
 
 def sunbiz_default(p):
@@ -133,7 +143,7 @@ HR = 4
 header(ws, HR, cols, [6,34,17,15,12,30,7,30,13,20,22,11,48,40,10,10,8,8,8,8,10,13,26,36,16,28,30,30,30,30,36,18,40])
 for i, p in enumerate(rows, 1):
     r = HR + i
-    mun, barrio = BARRIO.get(p["area"], (p["area"], ""))
+    mun, barrio = municipio(p["area"])
     red = p["redes_sociales"]
     tiene = "No verificado" if red == "No verificado" else ("No" if red.startswith("Ninguna") else "Sí")
     vals = [f"P{i:03d}", p["nombre"], mun, barrio, p["condado"], p["sector"], p["naics2"], NAICS[p["naics2"]], legal(p["forma_legal"]),

@@ -15,7 +15,7 @@ REGISTROS = [
     "whereCiudad": "UPPER(MAILCITY) = '{ciudad}'",
     "portal": "https://opendata.miamidade.gov/datasets/local-business-tax-view",
     "municipios": ["Doral", "Hialeah", "Hialeah Gardens", "Homestead", "Kendall", "Medley", "Miami (ciudad)", "Miami Beach",
-                   "Miami Shores", "North Miami", "North Miami Beach", "Miami Gardens"],
+                   "Miami Shores", "North Miami", "North Miami Beach", "Miami Gardens", "Aventura", "Coral Gables"],
     "alias": {"Miami (ciudad)": "MIAMI", "Kendall": "MIAMI"},
   },
 ]
