@@ -29,9 +29,11 @@ WR = Alignment(wrap_text=True, vertical="top")
 
 NAICS = {"11":"11 Agricultura/viveros","23":"23 Construcción y oficios","31":"31-33 Manufactura","32":"31-33 Manufactura",
  "33":"31-33 Manufactura","42":"42 Comercio mayorista","48":"48-49 Transporte y logística","53":"53 Inmobiliario/admin. propiedades",
- "54":"54 Servicios profesionales","62":"62 Salud","72":"72 Restaurantes/hotelería","81":"81 Servicios (auto, náutico, reparación)"}
+ "54":"54 Servicios profesionales","62":"62 Salud","72":"72 Restaurantes/hotelería","81":"81 Servicios (auto, náutico, reparación)",
+ "44":"44-45 Comercio minorista","45":"44-45 Comercio minorista","52":"52 Finanzas y seguros","56":"56 Servicios de apoyo (limpieza, paisajismo, seguridad)",
+ "61":"61 Educación","71":"71 Recreación y fitness"}
 ESTADO = {"Sin web detectada":"Sin sitio web","Sin sitio web":"Sin sitio web","Web posiblemente desactualizada":"Sitio obsoleto",
- "Sitio básico/obsoleto":"Sitio obsoleto","Tiene web":"Tiene web (auditar)","Presencia desordenada":"Presencia desordenada","No verificado":"No verificado"}
+ "Sitio básico/obsoleto":"Sitio obsoleto","Tiene web":"Tiene web (auditar)","Presencia desordenada":"Presencia desordenada","No verificado":"No verificado","Sitio obsoleto":"Sitio obsoleto"}
 BARRIO = {"Allapattah (Miami)":("Miami (ciudad)","Allapattah"),"Little Havana (Miami)":("Miami (ciudad)","Little Havana")}
 
 def legal(s):
@@ -79,6 +81,18 @@ for f in ("prospectos_miami_dade.csv", "prospectos_broward.csv"):
     with open(os.path.join(ROOT, "data", f), encoding="utf-8") as fh:
         rows += list(csv.DictReader(fh))
 
+# ---- Ampliación de industrias (prospectos con su contacto en la misma fila) ----
+_amp = os.path.join(ROOT, "data", "prospectos_ampliacion.json")
+if os.path.exists(_amp):
+    import json as _j
+    for x in _j.load(open(_amp, encoding="utf-8")):
+        n2 = str(x.get("naics2", ""))[:2]
+        if n2 not in NAICS: continue
+        rows.append({"nombre": x["nombre"], "area": x["area"], "condado": x["condado"], "sector": x["sector"], "naics2": n2,
+                     "forma_legal": x.get("forma_legal") or "No verificado", "estado_web": x["estado_web"] if x["estado_web"] in ESTADO else "No verificado",
+                     "redes_sociales": x.get("redes_sociales") or "No verificado", "evidencia": x.get("evidencia", ""), "fuente_url": x["fuente_url"],
+                     "_contacto": {k: x.get(k, "") for k in ("direccion", "telefono", "web", "facebook", "instagram", "linkedin", "yelp", "fuente_contacto", "nota")}})
+
 # ---- Contactos (dirección, teléfono, web, redes) y reclasificación con esa evidencia ----
 import json
 CONT = {c["id"]: c for c in json.load(open(os.path.join(ROOT, "data", "contactos.json"), encoding="utf-8"))}
@@ -92,7 +106,7 @@ def alerta(n):
     return ""
 for i, p in enumerate(rows, 1):
     pid = f"P{i:03d}"
-    c = CONT.get(pid, {})
+    c = CONT.get(pid) or p.get("_contacto") or {}
     p["_c"] = c
     web, nota = c.get("web", ""), c.get("nota", "").lower()
     if web and ("wixsite" in web or "wordpress.com" in web):
@@ -129,7 +143,7 @@ for i, p in enumerate(rows, 1):
     emp, yr = size_signals(p["evidencia"])
     ws.cell(row=r, column=15, value=emp); ws.cell(row=r, column=16, value=yr)
     ws.cell(row=r, column=17, value=f"=IFERROR(VLOOKUP(J{r},Parametros!$A$5:$B$9,2,FALSE),0)")
-    ws.cell(row=r, column=18, value=f"=IFERROR(VLOOKUP(H{r},Parametros!$D$5:$E$16,2,FALSE),1)")
+    ws.cell(row=r, column=18, value=f"=IFERROR(VLOOKUP(H{r},Parametros!$D$5:$E$22,2,FALSE),1)")
     ws.cell(row=r, column=19, value=f'=IF(OR(N(O{r})>=Parametros!$H$9,AND(N(P{r})>0,N(P{r})<=Parametros!$H$10)),1,0)')
     ws.cell(row=r, column=20, value=f"=Q{r}+R{r}+S{r}")
     ws.cell(row=r, column=21, value=f'=IF(OR(V{r}="Inactive",V{r}="No encontrada",V{r}="Duplicado"),"Descartada",IF(AND(T{r}>=Parametros!$H$5,S{r}=1),"A",IF(T{r}>=Parametros!$H$6,"B","C")))')
@@ -170,7 +184,9 @@ ps = [("23 Construcción y oficios",3,"CPL $76–228: alto valor por cliente"),(
       ("42 Comercio mayorista",2,"B2B CPL $103; decisión lenta"),("31-33 Manufactura",2,"B2B, catálogo/cotizador"),
       ("53 Inmobiliario/admin. propiedades",2,"CPL $100"),("81 Servicios (auto, náutico, reparación)",2,"Náutico FTL: ticket alto; auto CPL $28"),
       ("72 Restaurantes/hotelería",1,"Ticket bajo, CPC $2"),("11 Agricultura/viveros",1,"Mayorista, baja demanda de search"),
-      ("Sin clasificar",1,""),("",None,"")]
+      ("44-45 Comercio minorista",2,"Tráfico local, catálogo y Google Maps"),("52 Finanzas y seguros",3,"CPL alto, cliente recurrente"),
+      ("56 Servicios de apoyo (limpieza, paisajismo, seguridad)",2,"B2B local, contratos recurrentes"),("61 Educación",2,"Matrícula estacional, alta búsqueda local"),
+      ("71 Recreación y fitness",1,"Ticket bajo, fuerte en redes"),("Sin clasificar",1,"")]
 for i, (k, v) in enumerate(pe, 5): pa.cell(row=i, column=1, value=k); pa.cell(row=i, column=2, value=v).font = INP
 for i, (k, v, n) in enumerate(ps, 5):
     pa.cell(row=i, column=4, value=k); c = pa.cell(row=i, column=5, value=v); c.font = INP
@@ -180,9 +196,9 @@ pa.cell(row=6, column=7, value="B"); pa.cell(row=6, column=8, value=4).font = IN
 pa.cell(row=7, column=7, value="C"); pa.cell(row=7, column=8, value="< B")
 pa.cell(row=9, column=7, value="Empleados mín."); pa.cell(row=9, column=8, value=10).font = INP
 pa.cell(row=10, column=7, value="Fundada hasta"); pa.cell(row=10, column=8, value=2000).font = INP
-pa["A18"] = "Puntaje = Peso web + Peso sector + Señal tamaño (1 si ≥10 empleados/camiones o fundada ≤2000). Máx. 7. Prioridad A exige además Señal tamaño = 1 (empresa mediana/establecida). Inactive en Sunbiz = Descartada."; pa["A18"].font = ST
-pa["A19"] = "Pesos de sector derivados de benchmarks Google Ads (hoja Google_Ads) y ticket de servicio esperado. Criterio propio, ajustable."; pa["A19"].font = ST
-for r in range(5, 17):
+pa["A24"] = "Puntaje = Peso web + Peso sector + Señal tamaño (1 si ≥10 empleados/camiones o fundada ≤2000). Máx. 7. Prioridad A exige además Señal tamaño = 1 (empresa mediana/establecida). Inactive en Sunbiz = Descartada."; pa["A24"].font = ST
+pa["A25"] = "Pesos de sector derivados de benchmarks Google Ads (hoja Google_Ads) y ticket de servicio esperado. Criterio propio, ajustable."; pa["A25"].font = ST
+for r in range(5, 23):
     for c in (1,2,4,5,7,8):
         x = pa.cell(row=r, column=c)
         if x.font != INP: x.font = B
@@ -196,7 +212,8 @@ oc = ["Industria (NAICS)","Prospectos","Sin web","Sitio obsoleto","Desordenada",
 header(op, 4, oc, [36,11,9,11,11,18,9,11,14,15,18,15])
 inds = [k for k, _, _ in ps if k and k != "Sin clasificar"]
 tick = {"23":(4500,1500,76.40),"48":(5000,1500,103.54),"62":(4500,1800,56.83),"54":(6000,2000,131.63),"42":(4000,1200,103.54),
-        "31":(4000,1200,103.54),"53":(3500,1200,100.48),"81":(3000,1000,28.50),"72":(2500,800,30.27),"11":(3000,800,70.11)}
+        "31":(4000,1200,103.54),"53":(3500,1200,100.48),"81":(3000,1000,28.50),"72":(2500,800,30.27),"11":(3000,800,70.11),
+        "44":(3000,900,70.11),"52":(4500,1500,70.11),"56":(3500,1000,90.92),"61":(3500,1000,70.11),"71":(3000,900,70.11)}
 P = f"Prospectos!$H${HR+1}:$H${LAST}"; E = f"Prospectos!$J${HR+1}:$J${LAST}"; S = f"Prospectos!$U${HR+1}:$U${LAST}"
 for i, ind in enumerate(inds, 5):
     code = ind[:2]
