@@ -30,4 +30,5 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
 - v1.1 (2026-09): Funnel 26 publicado en la rama `claude/miami-market-research-pun0i6` de FOCO. Todavía no está fusionado a main.
 - v1.2 (2026-09): contactos de 92/95 empresas (`data/contactos.json`), reclasificación de estado web, 6 analizadores tipo dona y registro BTR de Miami-Dade en vivo (sin probar desde el sandbox).
 - Regla de privacidad: solo datos comerciales públicos; se omiten direcciones residenciales, celulares y correos personales.
+- v2 (2026-09-24): PUBLICADO en focoworking.com/funnel26/ (focoworking/FOCO#16 fusionado, deploy verde). 192 prospectos, 15 industrias, 22 ciudades. Acceso con clave vía PHP (hash en producto/funnel26/acceso.json; la clave en claro NO se versiona, se entregó por chat).
 - Pendiente: validar en Sunbiz los 13 prospectos A, verificar los 50 "No verificado", ampliar la cobertura de Miami Beach, Wynwood, salud y restaurantes, e integrar los datasets BTR y el SFTP de Sunbiz.
