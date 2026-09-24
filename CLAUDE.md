@@ -22,10 +22,12 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
 ## Funnel 26 (sitio web)
 - Es la página `/funnel26/` de focoworking.com. Vive en el repo `focoworking/FOCO`, en `producto/funnel26/`, y sigue el mismo patrón que Online Consulting (`producto/nivel`).
 - Flujo de datos: Excel → `research/scripts/export_funnel26.py <FOCO>/producto/funnel26/datos.js` → `npm run pages` lo empaqueta en `public/funnel26/`.
-- Estilo: el sistema «vidrio» de Nivel (fondo negro, tarjetas translúcidas, Archivo). El amarillo `#FEFD55` se reserva para la acción principal. Colores de estado web, validados para daltonismo (CVD): sin web `#c44429` · deficiente `#aa8d0e` · no verificado `#9a66ff` · tiene web `#0fa383`. La serie simple va en azul `#588cff`.
+- Estilo: el sistema «vidrio» de Nivel (fondo negro, tarjetas translúcidas, Archivo). El amarillo `#FEFD55` se reserva para la acción principal. Colores de estado web, validados para daltonismo (CVD): sin web `#c44429` · deficiente `#aa8d0e` · no verificado `#9a66ff` · tiene web `#0fa383`. La serie simple va en azul `#588cff`. Donas: categórica `#3987e5 #d95926 #199e70 #c98500 #d55181 #008300 #9085e9`, «Otras» `#5b5d63`, antigüedad en rampa ordinal `#9ec5f4 #6da7ec #3987e5 #256abf #184f95`.
 - La página no lleva meta noindex, porque el workflow de producción aborta si lo encuentra. En su lugar usa `X-Robots-Tag` en `public/funnel26/.htaccess`. No tiene control de acceso: queda pendiente ponerle contraseña.
 
 ## Estado
 - v1 (2026-09): 95 prospectos, 4 tablas dinámicas, matriz de oportunidad. Rama `claude/miami-market-research-pun0i6`.
 - v1.1 (2026-09): Funnel 26 publicado en la rama `claude/miami-market-research-pun0i6` de FOCO. Todavía no está fusionado a main.
+- v1.2 (2026-09): contactos de 92/95 empresas (`data/contactos.json`), reclasificación de estado web, 6 analizadores tipo dona y registro BTR de Miami-Dade en vivo (sin probar desde el sandbox).
+- Regla de privacidad: solo datos comerciales públicos; se omiten direcciones residenciales, celulares y correos personales.
 - Pendiente: validar en Sunbiz los 13 prospectos A, verificar los 50 "No verificado", ampliar la cobertura de Miami Beach, Wynwood, salud y restaurantes, e integrar los datasets BTR y el SFTP de Sunbiz.

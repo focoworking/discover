@@ -79,15 +79,44 @@ for f in ("prospectos_miami_dade.csv", "prospectos_broward.csv"):
     with open(os.path.join(ROOT, "data", f), encoding="utf-8") as fh:
         rows += list(csv.DictReader(fh))
 
+# ---- Contactos (dirección, teléfono, web, redes) y reclasificación con esa evidencia ----
+import json
+CONT = {c["id"]: c for c in json.load(open(os.path.join(ROOT, "data", "contactos.json"), encoding="utf-8"))}
+SIN_WEB = ("web no encontrada", "web propia no encontrada", "web y redes no encontradas", "web/redes no encontradas")
+SUNBIZ = {"P001": "Inactive", "P083": "Inactive", "P027": "Duplicado"}
+def alerta(n):
+    n = n.lower()
+    for k, v in (("duplicado", "Duplicado"), ("posible cerrado", "Posible cerrado"), ("disuelta", "Disuelta en Sunbiz"),
+                 ("no encontrado", "Sin datos de contacto"), ("dudosa", "Coincidencia dudosa")):
+        if k in n: return v
+    return ""
+for i, p in enumerate(rows, 1):
+    pid = f"P{i:03d}"
+    c = CONT.get(pid, {})
+    p["_c"] = c
+    web, nota = c.get("web", ""), c.get("nota", "").lower()
+    if web and ("wixsite" in web or "wordpress.com" in web):
+        if p["estado_web"] in ("No verificado", "Sin sitio web", "Sin web detectada"): p["estado_web"] = "Sitio básico/obsoleto"
+    elif web and p["estado_web"] == "No verificado":
+        p["estado_web"] = "Tiene web"
+    elif not web and p["estado_web"] == "No verificado" and any(k in nota for k in SIN_WEB):
+        p["estado_web"] = "Sin sitio web"
+    redes = [n for k, n in (("facebook", "Facebook"), ("instagram", "Instagram"), ("linkedin", "LinkedIn"), ("yelp", "Yelp")) if c.get(k)]
+    if redes: p["redes_sociales"] = "; ".join(redes)
+    elif c and p["redes_sociales"] == "No verificado": p["redes_sociales"] = "Ninguna encontrada"
+    p["_sunbiz"] = SUNBIZ.get(pid)
+    p["_alerta"] = alerta(c.get("nota", ""))
+
 wb = Workbook()
 res = wb.active; res.title = "Resumen"
 ws = wb.create_sheet("Prospectos")
 title(ws, "Prospectos: empresas con brecha digital", "Fuente por fila. Columnas azules/amarillas = completar tras verificación en Sunbiz y Google Maps.")
 cols = ["ID","Empresa","Municipio","Barrio/zona","Condado","Sector (detalle)","NAICS","Industria (NAICS)","Forma legal","Estado web",
         "Redes sociales","Tiene redes","Evidencia","Fuente","Empleados (est.)","Año fundación","Peso web","Peso sector","Señal tamaño",
-        "Puntaje","Prioridad","Estado Sunbiz","Próximo paso"]
+        "Puntaje","Prioridad","Estado Sunbiz","Próximo paso",
+        "Dirección","Teléfono","Web","Facebook","Instagram","LinkedIn","Yelp","Fuente contacto","Alerta","Nota contacto"]
 HR = 4
-header(ws, HR, cols, [6,34,17,15,12,30,7,30,13,20,22,11,48,40,10,10,8,8,8,8,10,13,26])
+header(ws, HR, cols, [6,34,17,15,12,30,7,30,13,20,22,11,48,40,10,10,8,8,8,8,10,13,26,36,16,28,30,30,30,30,36,18,40])
 for i, p in enumerate(rows, 1):
     r = HR + i
     mun, barrio = BARRIO.get(p["area"], (p["area"], ""))
@@ -103,18 +132,23 @@ for i, p in enumerate(rows, 1):
     ws.cell(row=r, column=18, value=f"=IFERROR(VLOOKUP(H{r},Parametros!$D$5:$E$16,2,FALSE),1)")
     ws.cell(row=r, column=19, value=f'=IF(OR(N(O{r})>=Parametros!$H$9,AND(N(P{r})>0,N(P{r})<=Parametros!$H$10)),1,0)')
     ws.cell(row=r, column=20, value=f"=Q{r}+R{r}+S{r}")
-    ws.cell(row=r, column=21, value=f'=IF(OR(V{r}="Inactive",V{r}="No encontrada"),"Descartada",IF(AND(T{r}>=Parametros!$H$5,S{r}=1),"A",IF(T{r}>=Parametros!$H$6,"B","C")))')
-    ws.cell(row=r, column=22, value=sunbiz_default(p))
+    ws.cell(row=r, column=21, value=f'=IF(OR(V{r}="Inactive",V{r}="No encontrada",V{r}="Duplicado"),"Descartada",IF(AND(T{r}>=Parametros!$H$5,S{r}=1),"A",IF(T{r}>=Parametros!$H$6,"B","C")))')
+    ws.cell(row=r, column=22, value=p["_sunbiz"] or sunbiz_default(p))
+    c = p["_c"]
+    for j, k in enumerate(("direccion", "telefono", "web", "facebook", "instagram", "linkedin", "yelp", "fuente_contacto"), 24):
+        ws.cell(row=r, column=j, value=c.get(k) or None)
+    ws.cell(row=r, column=32, value=p["_alerta"] or None)
+    ws.cell(row=r, column=33, value=c.get("nota") or None)
     ws.cell(row=r, column=23, value="Verificar Sunbiz (posible inactiva)" if "inactiv" in (p["forma_legal"]+p["evidencia"]).lower() or "revocada" in p["evidencia"] else "")
 LAST = HR + len(rows)
-body(ws, HR + 1, LAST, len(cols), url_cols=(14,))
+body(ws, HR + 1, LAST, len(cols), url_cols=(14, 26, 27, 28, 29, 30, 31))
 for r in range(HR + 1, LAST + 1):
     for c in (22, 23):
         ws.cell(row=r, column=c).font = INP
         ws.cell(row=r, column=c).fill = PatternFill("solid", fgColor="FFF9DB")
     for c in (7, 12, 15, 16, 17, 18, 19, 20, 21):
         ws.cell(row=r, column=c).alignment = Alignment(horizontal="center", vertical="top")
-dv = DataValidation(type="list", formula1='"Active,Inactive,Pendiente,No encontrada"', allow_blank=True)
+dv = DataValidation(type="list", formula1='"Active,Inactive,Pendiente,No encontrada,Duplicado"', allow_blank=True)
 ws.add_data_validation(dv); dv.add(f"V{HR+1}:V{LAST}")
 dv2 = DataValidation(type="list", formula1='"Verificar web en Google Maps,Auditoría web,Email B2B 1 a 1,Visita presencial,Descartar"', allow_blank=True)
 ws.add_data_validation(dv2); dv2.add(f"W{HR+1}:W{LAST}")
