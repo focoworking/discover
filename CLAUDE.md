@@ -28,6 +28,7 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
 - Filtros: condado, ciudad (chips con conteo o clic en el mapa), nicho, industria, estado web, prioridad y búsqueda, más el filtrado cruzado desde las donas.
 - Mapa: SVG propio con los condados de `mapa.js` (generado por `research/scripts/mapa_funnel26.mjs` con us-atlas, en el corredor urbano) y las ciudades de `data/coordenadas.py`. Debajo va la ficha de la ciudad elegida. Si se añade una ciudad nueva, hay que agregar sus coordenadas.
 - Nicho comercial: `research/scripts/nichos.py` (40 nichos). Si la fila trae su nicho explícito se respeta; si no, se aplican las reglas en orden. Los lotes nuevos van en `data/amp_*.json`, con el campo `nicho`.
+- Navegación (estilo archivado): pestañas con píldora deslizante; ≤1180 px, sección actual numerada «04 / 09». Línea azul de progreso. Menú a pantalla completa (botón magnético o tecla M) que se abre en círculo desde el botón, con secciones numeradas en tipografía grande (Archivo 600, tracking −0.035em), letras que ruedan al hover, las demás atenuadas a .28 y vista previa con cifra viva y número en contorno. Curva `cubic-bezier(.76,0,.24,1)`. Respeta reduced-motion. Referencia pedida: zalak-patel.com (no accesible desde el sandbox).
 - Publicar: PR a `main` de FOCO → deploy FTP automático. Tras un squash merge, la rama se rehace desde `origin/main` antes de seguir.
 
 ## Estado
@@ -46,4 +47,5 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
   - Despliegue: `composer install -d producto/funnel26` → `empaquetar-sdk.php` → `_lib.phar` (un solo archivo: el FTP de GoDaddy cortó la conexión subiendo ~2.800 archivos). `_config.php` se genera desde el secreto **ANTHROPIC_API_KEY** (entorno production); sin él, el asistente queda desactivado.
   - `export_funnel26.py` exporta ahora `parametros` (pesos del puntaje) para que el asistente puntúe igual que el Excel.
   - Prueba local: `php -S` + un mock de la API con `ANTHROPIC_BASE_URL`.
+- v4.1 (2026-09-26): menú dinámico (focoworking/FOCO#21).
 - Pendiente: validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
