@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.join(ROOT, "data"))
 from macro import AREAS, COUNTIES, DIGITAL
 from ads_legal import ADS, PRECIOS, LEGAL
 from registros import REGISTROS
+from coordenadas import COORDS
 
 out = sys.argv[1]
 ws = load_workbook(os.path.join(ROOT, "Miami_Oportunidad_Digital.xlsx"), data_only=True)["Prospectos"]
@@ -17,7 +18,7 @@ hdr = [c.value for c in ws[4]]
 key = {"ID":"id","Empresa":"nombre","Municipio":"municipio","Barrio/zona":"barrio","Condado":"condado","Sector (detalle)":"sector",
        "NAICS":"naics","Industria (NAICS)":"industria","Forma legal":"legal","Estado web":"web","Redes sociales":"redes",
        "Tiene redes":"tieneRedes","Evidencia":"evidencia","Fuente":"fuente","Empleados (est.)":"empleados","Año fundación":"fundada",
-       "Puntaje":"puntaje","Prioridad":"prioridad","Estado Sunbiz":"sunbiz","Alerta":"alerta"}
+       "Puntaje":"puntaje","Prioridad":"prioridad","Estado Sunbiz":"sunbiz","Alerta":"alerta","Nicho":"nicho"}
 CKEY = {"Dirección":"direccion","Teléfono":"telefono","Web":"web","Facebook":"facebook","Instagram":"instagram",
         "LinkedIn":"linkedin","Yelp":"yelp","Fuente contacto":"fuente","Nota contacto":"nota"}
 pros = []
@@ -40,6 +41,7 @@ datos = {
   "legal": [dict(zip(["tema","regla","implicacion","fuente"], l)) for l in LEGAL],
   # Registros oficiales consultados en vivo desde el navegador (ArcGIS REST).
   "registros": REGISTROS,
+  "coordenadas": {k: list(v) for k, v in COORDS.items()},
 }
 with open(out, "w", encoding="utf-8") as f:
     f.write("/* Generado por discover/research/scripts/export_funnel26.py desde el estudio de mercado.\n"

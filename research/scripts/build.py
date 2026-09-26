@@ -11,6 +11,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "data")); sys.path.insert(0, os.path.dirname(__file__))
 from macro import AREAS, COUNTIES, DIGITAL
 from ads_legal import ADS, PRECIOS, LEGAL
+from nichos import nicho
 
 # ---- Estilo (minimalista: tinta + un acento) ----
 INK, ACC, MUTED, LINE, SOFT = "1F2937", "0E7C86", "6B7280", "E5E7EB", "F3F7F8"
@@ -31,7 +32,7 @@ NAICS = {"11":"11 Agricultura/viveros","23":"23 Construcción y oficios","31":"3
  "33":"31-33 Manufactura","42":"42 Comercio mayorista","48":"48-49 Transporte y logística","53":"53 Inmobiliario/admin. propiedades",
  "54":"54 Servicios profesionales","62":"62 Salud","72":"72 Restaurantes/hotelería","81":"81 Servicios (auto, náutico, reparación)",
  "44":"44-45 Comercio minorista","45":"44-45 Comercio minorista","52":"52 Finanzas y seguros","56":"56 Servicios de apoyo (limpieza, paisajismo, seguridad)",
- "61":"61 Educación","71":"71 Recreación y fitness"}
+ "61":"61 Educación","71":"71 Recreación y fitness","51":"51 Información y medios (grabación)"}
 ESTADO = {"Sin web detectada":"Sin sitio web","Sin sitio web":"Sin sitio web","Web posiblemente desactualizada":"Sitio obsoleto",
  "Sitio básico/obsoleto":"Sitio obsoleto","Tiene web":"Tiene web (auditar)","Presencia desordenada":"Presencia desordenada","No verificado":"No verificado","Sitio obsoleto":"Sitio obsoleto"}
 BARRIO = {"Allapattah (Miami)":("Miami (ciudad)","Allapattah"),"Little Havana (Miami)":("Miami (ciudad)","Little Havana")}
@@ -50,6 +51,7 @@ def municipio(area):
         a, b = m.group(1).strip(), m.group(2).strip()
         if b == "ciudad": return (area, "")
         if b == "Miami": return ("Miami (ciudad)", a)
+        if a == "Miami": return ("Kendall", "") if b.startswith("Kendall") else ("Miami (ciudad)", b)
         return (a, "")
     return ("Miami (ciudad)", "") if area == "Miami" else (area, "")
 
@@ -92,15 +94,16 @@ for f in ("prospectos_miami_dade.csv", "prospectos_broward.csv"):
         rows += list(csv.DictReader(fh))
 
 # ---- Ampliación de industrias (prospectos con su contacto en la misma fila) ----
-_amp = os.path.join(ROOT, "data", "prospectos_ampliacion.json")
-if os.path.exists(_amp):
-    import json as _j
+import glob as _g, json as _j
+_amps = [os.path.join(ROOT, "data", "prospectos_ampliacion.json")] + sorted(_g.glob(os.path.join(ROOT, "data", "amp_*.json")))
+for _amp in [a for a in _amps if os.path.exists(a)]:
     for x in _j.load(open(_amp, encoding="utf-8")):
         n2 = str(x.get("naics2", ""))[:2]
         if n2 not in NAICS: continue
         rows.append({"nombre": x["nombre"], "area": x["area"], "condado": x["condado"], "sector": x["sector"], "naics2": n2,
                      "forma_legal": x.get("forma_legal") or "No verificado", "estado_web": x["estado_web"] if x["estado_web"] in ESTADO else "No verificado",
                      "redes_sociales": x.get("redes_sociales") or "No verificado", "evidencia": x.get("evidencia", ""), "fuente_url": x["fuente_url"],
+                     "nicho": x.get("nicho", ""),
                      "_contacto": {k: x.get(k, "") for k in ("direccion", "telefono", "web", "facebook", "instagram", "linkedin", "yelp", "fuente_contacto", "nota")}})
 
 # ---- Contactos (dirección, teléfono, web, redes) y reclasificación con esa evidencia ----
@@ -138,9 +141,9 @@ title(ws, "Prospectos: empresas con brecha digital", "Fuente por fila. Columnas 
 cols = ["ID","Empresa","Municipio","Barrio/zona","Condado","Sector (detalle)","NAICS","Industria (NAICS)","Forma legal","Estado web",
         "Redes sociales","Tiene redes","Evidencia","Fuente","Empleados (est.)","Año fundación","Peso web","Peso sector","Señal tamaño",
         "Puntaje","Prioridad","Estado Sunbiz","Próximo paso",
-        "Dirección","Teléfono","Web","Facebook","Instagram","LinkedIn","Yelp","Fuente contacto","Alerta","Nota contacto"]
+        "Dirección","Teléfono","Web","Facebook","Instagram","LinkedIn","Yelp","Fuente contacto","Alerta","Nota contacto","Nicho"]
 HR = 4
-header(ws, HR, cols, [6,34,17,15,12,30,7,30,13,20,22,11,48,40,10,10,8,8,8,8,10,13,26,36,16,28,30,30,30,30,36,18,40])
+header(ws, HR, cols, [6,34,17,15,12,30,7,30,13,20,22,11,48,40,10,10,8,8,8,8,10,13,26,36,16,28,30,30,30,30,36,18,40,30])
 for i, p in enumerate(rows, 1):
     r = HR + i
     mun, barrio = municipio(p["area"])
@@ -153,7 +156,7 @@ for i, p in enumerate(rows, 1):
     emp, yr = size_signals(p["evidencia"])
     ws.cell(row=r, column=15, value=emp); ws.cell(row=r, column=16, value=yr)
     ws.cell(row=r, column=17, value=f"=IFERROR(VLOOKUP(J{r},Parametros!$A$5:$B$9,2,FALSE),0)")
-    ws.cell(row=r, column=18, value=f"=IFERROR(VLOOKUP(H{r},Parametros!$D$5:$E$22,2,FALSE),1)")
+    ws.cell(row=r, column=18, value=f"=IFERROR(VLOOKUP(H{r},Parametros!$D$5:$E$23,2,FALSE),1)")
     ws.cell(row=r, column=19, value=f'=IF(OR(N(O{r})>=Parametros!$H$9,AND(N(P{r})>0,N(P{r})<=Parametros!$H$10)),1,0)')
     ws.cell(row=r, column=20, value=f"=Q{r}+R{r}+S{r}")
     ws.cell(row=r, column=21, value=f'=IF(OR(V{r}="Inactive",V{r}="No encontrada",V{r}="Duplicado"),"Descartada",IF(AND(T{r}>=Parametros!$H$5,S{r}=1),"A",IF(T{r}>=Parametros!$H$6,"B","C")))')
@@ -163,6 +166,7 @@ for i, p in enumerate(rows, 1):
         ws.cell(row=r, column=j, value=c.get(k) or None)
     ws.cell(row=r, column=32, value=p["_alerta"] or None)
     ws.cell(row=r, column=33, value=c.get("nota") or None)
+    ws.cell(row=r, column=34, value=nicho(p["sector"], p.get("nicho")))
     ws.cell(row=r, column=23, value="Verificar Sunbiz (posible inactiva)" if "inactiv" in (p["forma_legal"]+p["evidencia"]).lower() or "revocada" in p["evidencia"] else "")
 LAST = HR + len(rows)
 body(ws, HR + 1, LAST, len(cols), url_cols=(14, 26, 27, 28, 29, 30, 31))
@@ -196,7 +200,7 @@ ps = [("23 Construcción y oficios",3,"CPL $76–228: alto valor por cliente"),(
       ("72 Restaurantes/hotelería",1,"Ticket bajo, CPC $2"),("11 Agricultura/viveros",1,"Mayorista, baja demanda de search"),
       ("44-45 Comercio minorista",2,"Tráfico local, catálogo y Google Maps"),("52 Finanzas y seguros",3,"CPL alto, cliente recurrente"),
       ("56 Servicios de apoyo (limpieza, paisajismo, seguridad)",2,"B2B local, contratos recurrentes"),("61 Educación",2,"Matrícula estacional, alta búsqueda local"),
-      ("71 Recreación y fitness",1,"Ticket bajo, fuerte en redes"),("Sin clasificar",1,"")]
+      ("71 Recreación y fitness",1,"Ticket bajo, fuerte en redes"),("51 Información y medios (grabación)",2,"Estudios y productoras: portafolio y reservas"),("Sin clasificar",1,"")]
 for i, (k, v) in enumerate(pe, 5): pa.cell(row=i, column=1, value=k); pa.cell(row=i, column=2, value=v).font = INP
 for i, (k, v, n) in enumerate(ps, 5):
     pa.cell(row=i, column=4, value=k); c = pa.cell(row=i, column=5, value=v); c.font = INP
@@ -208,7 +212,7 @@ pa.cell(row=9, column=7, value="Empleados mín."); pa.cell(row=9, column=8, valu
 pa.cell(row=10, column=7, value="Fundada hasta"); pa.cell(row=10, column=8, value=2000).font = INP
 pa["A24"] = "Puntaje = Peso web + Peso sector + Señal tamaño (1 si ≥10 empleados/camiones o fundada ≤2000). Máx. 7. Prioridad A exige además Señal tamaño = 1 (empresa mediana/establecida). Inactive en Sunbiz = Descartada."; pa["A24"].font = ST
 pa["A25"] = "Pesos de sector derivados de benchmarks Google Ads (hoja Google_Ads) y ticket de servicio esperado. Criterio propio, ajustable."; pa["A25"].font = ST
-for r in range(5, 23):
+for r in range(5, 24):
     for c in (1,2,4,5,7,8):
         x = pa.cell(row=r, column=c)
         if x.font != INP: x.font = B
@@ -223,7 +227,7 @@ header(op, 4, oc, [36,11,9,11,11,18,9,11,14,15,18,15])
 inds = [k for k, _, _ in ps if k and k != "Sin clasificar"]
 tick = {"23":(4500,1500,76.40),"48":(5000,1500,103.54),"62":(4500,1800,56.83),"54":(6000,2000,131.63),"42":(4000,1200,103.54),
         "31":(4000,1200,103.54),"53":(3500,1200,100.48),"81":(3000,1000,28.50),"72":(2500,800,30.27),"11":(3000,800,70.11),
-        "44":(3000,900,70.11),"52":(4500,1500,70.11),"56":(3500,1000,90.92),"61":(3500,1000,70.11),"71":(3000,900,70.11)}
+        "44":(3000,900,70.11),"52":(4500,1500,70.11),"56":(3500,1000,90.92),"61":(3500,1000,70.11),"71":(3000,900,70.11),"51":(4000,1200,70.11)}
 P = f"Prospectos!$H${HR+1}:$H${LAST}"; E = f"Prospectos!$J${HR+1}:$J${LAST}"; S = f"Prospectos!$U${HR+1}:$U${LAST}"
 for i, ind in enumerate(inds, 5):
     code = ind[:2]
@@ -404,6 +408,8 @@ run(tmp, out, [
        fields=[("Condado","row"),("Municipio","row"),("Estado web","col"),("Empresa","data_count")]),
   dict(src="Prospectos", dst="TD_Industria_Web", name="TD2", hdr_row=HR, last_row=LAST,
        fields=[("Condado","page"),("Industria (NAICS)","row"),("Estado web","col"),("Empresa","data_count")]),
+  dict(src="Prospectos", dst="TD_Nicho_Web", name="TD5", hdr_row=HR, last_row=LAST,
+       fields=[("Condado","page"),("Nicho","row"),("Estado web","col"),("Empresa","data_count")]),
   dict(src="Prospectos", dst="TD_Legal_Prioridad", name="TD3", hdr_row=HR, last_row=LAST,
        fields=[("Condado","page"),("Forma legal","row"),("Prioridad","col"),("Empresa","data_count")]),
   dict(src="Prospectos", dst="TD_Redes", name="TD4", hdr_row=HR, last_row=LAST,
@@ -412,6 +418,7 @@ run(tmp, out, [
   "TD_Area_Web": "Tabla dinámica: prospectos por condado, municipio y estado web",
   "TD_Industria_Web": "Tabla dinámica: industria × estado web (filtro: condado)",
   "TD_Legal_Prioridad": "Tabla dinámica: forma legal × prioridad (filtro: condado)",
+  "TD_Nicho_Web": "Tabla dinámica: nicho comercial × estado web (filtro: condado)",
   "TD_Redes": "Tabla dinámica: presencia en redes sociales × condado (filtro: industria)",
 }, after="Prospectos")
 os.remove(tmp)
