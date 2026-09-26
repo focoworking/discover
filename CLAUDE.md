@@ -43,7 +43,7 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
   - Toda escritura exige una fuente vista en la misma consulta. Las altas se marcan con `origen: asistente` y `sunbiz: Pendiente`, y hay registro y deshacer.
   - Los datos vivos van en `vivos.php`, fuera de la carpeta pública (`../f26-datos`), y el tablero los suma a `datos.js` al cargar.
   - Acceso: exige sesión, un token CSRF (meta `f26-csrf`) y un tope de 40 preguntas/hora. Todo `_*` está bloqueado.
-  - Despliegue: `composer install -d producto/funnel26` → `_lib/`. `_config.php` se genera desde el secreto **ANTHROPIC_API_KEY** (entorno production); sin él, el asistente queda desactivado.
+  - Despliegue: `composer install -d producto/funnel26` → `empaquetar-sdk.php` → `_lib.phar` (un solo archivo: el FTP de GoDaddy cortó la conexión subiendo ~2.800 archivos). `_config.php` se genera desde el secreto **ANTHROPIC_API_KEY** (entorno production); sin él, el asistente queda desactivado.
   - `export_funnel26.py` exporta ahora `parametros` (pesos del puntaje) para que el asistente puntúe igual que el Excel.
   - Prueba local: `php -S` + un mock de la API con `ANTHROPIC_BASE_URL`.
 - Pendiente: validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
