@@ -21,6 +21,14 @@ key = {"ID":"id","Empresa":"nombre","Municipio":"municipio","Barrio/zona":"barri
        "Puntaje":"puntaje","Prioridad":"prioridad","Estado Sunbiz":"sunbiz","Alerta":"alerta","Nicho":"nicho"}
 CKEY = {"Dirección":"direccion","Teléfono":"telefono","Web":"web","Facebook":"facebook","Instagram":"instagram",
         "LinkedIn":"linkedin","Yelp":"yelp","Fuente contacto":"fuente","Nota contacto":"nota"}
+# Parámetros del puntaje: el asistente del sitio calcula la prioridad de las
+# empresas que añade con los mismos pesos que el Excel.
+pa = load_workbook(os.path.join(ROOT, "Miami_Oportunidad_Digital.xlsx"), data_only=True)["Parametros"]
+parametros = {
+  "pesoWeb": {pa.cell(r, 1).value: pa.cell(r, 2).value for r in range(5, 10) if pa.cell(r, 1).value},
+  "pesoIndustria": {pa.cell(r, 4).value: pa.cell(r, 5).value for r in range(5, 24) if pa.cell(r, 4).value and pa.cell(r, 5).value is not None},
+  "umbralA": pa["H5"].value, "umbralB": pa["H6"].value, "empleadosMin": pa["H9"].value, "fundadaHasta": pa["H10"].value,
+}
 pros = []
 for row in ws.iter_rows(min_row=5, values_only=True):
     if not row[0]: continue
@@ -42,6 +50,7 @@ datos = {
   # Registros oficiales consultados en vivo desde el navegador (ArcGIS REST).
   "registros": REGISTROS,
   "coordenadas": {k: list(v) for k, v in COORDS.items()},
+  "parametros": parametros,
 }
 with open(out, "w", encoding="utf-8") as f:
     f.write("/* Generado por discover/research/scripts/export_funnel26.py desde el estudio de mercado.\n"
