@@ -2,6 +2,9 @@
 
 ## Propósito
 Investigación de mercado y prospección B2B de servicios digitales: web, SEO, redes y Google Ads para empresas medianas de Miami-Dade y Broward.
+Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puerta de «estudio de caso de embudo» por usuario, para B2B y B2C.
+  - Sin cuenta se ven solo cifras; con cuenta, empresas y contactos.
+  - El tablero de prospección se mantiene como vista detallada.
 
 ## Reglas de datos
 - Todas las cifras llevan su fuente (URL). Si no están verificadas en la fuente primaria, se marcan como "estimado".
@@ -40,6 +43,12 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
   - Radio de 40 mi desde el dispositivo, con límite propio de espera y sin guardarse en el servidor.
   - Misma estructura para todos; solo cambia el contenido.
   - Para añadir un nicho nuevo hay que darlo de alta también en el tesauro.
+- Estudio guiado (v6):
+  - La búsqueda de la portada abre una guía de 4 pasos (qué vendes / a quién / dónde / objetivo + ticket y presupuesto).
+  - El motor es `producto/funnel26/estudio.php` (`?estudio=1`). Las referencias de conversión están en `F26_REF`, con fuente, y el método en `research/metodos_funnel.md`.
+  - El estudio cubre: mercado bottom-up, embudo pagado y directo, clientes o competencia, canales, plan 30-60-90, legal y fuentes.
+  - Al iniciar sesión se vuelve al estudio (`?ver=1`).
+  - Estilo: azul marino `#06142a`→`#15467f`, con acento amarillo y tarjetas translúcidas; el PDF sale en claro (Arial, `#1F2937`, acento `#0E7C86`).
 - Barra superior del tablero (estilo archivado): bloque claro `#f5f6f7`, tinta `#07080b`, que contrasta con el cuerpo negro. Lleva isotipo (3 barras `#FEFD55` sobre `#0c2539`), FUNNEL’26 (Archivo 800) con el subtítulo «Estudio de Mercado» (mono, versalitas), Menú, Mi cuenta (Perfil, Consultas PDF · historial, Suscripciones, Salir) y «Obtén tu potencial» → focoworking.com/discover (negro con texto amarillo). Sin pestañas. Cabecera alta (132 px) con la marca centrada y grande (isotipo ≤76 px, título ≤62 px); Menú a la izquierda; Mi cuenta y CTA a la derecha. Se compacta a 76 px al bajar. Línea azul de progreso.
 - Navegación: Menú a pantalla completa (botón magnético o tecla M) que se abre en círculo desde el botón, con secciones numeradas en tipografía grande (Archivo 600, tracking −0.035em), letras que ruedan al hover, las demás atenuadas a .28 y vista previa con cifra viva y número en contorno. Curva `cubic-bezier(.76,0,.24,1)`. Respeta reduced-motion. Referencia pedida: zalak-patel.com (no accesible desde el sandbox).
 - **Regla GoDaddy:** el hosting inyecta en cada HTML su script `img1.wsimg.com/traffic-assets/js/tccl.min.js` antes del primer `</body>`. Nunca poner `</body>`, `</html>`, `</head>`, `</script>` ni `<!--` dentro de un `<script>`: se escriben `<\/body>`. Si no, parte el script en dos («Unexpected end of input»). `construir.mjs` lo impide, y el deploy comprueba con `?diag=app` que la app llega intacta hasta `<!--f26-fin-app-->`. El servidor es LiteSpeed, con PHP 8.3.
@@ -70,4 +79,5 @@ Investigación de mercado y prospección B2B de servicios digitales: web, SEO, r
 - v5 (2026-09-26): portada bilingüe con búsqueda gratuita agregada (focoworking/FOCO#29). Solo la portada está traducida; traducir el tablero al inglés queda pendiente.
 - v5.1 (2026-09-26): búsqueda inteligente + radio de 40 mi (focoworking/FOCO#31).
 - Investigación de métodos (2026-09-26): `research/metodos_funnel.md`. Conclusión: mantener la raíz (B2B, brecha digital) y añadir intención, auditoría por prospecto, SAM/SOM, outreach personalizado, velocidad de respuesta y flywheel.
-- Pendiente: el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
+- v6 (2026-09-26): estudio de caso guiado por usuario (focoworking/FOCO#32).
+- Pendiente: guardar los estudios por usuario (historial en Mi cuenta); cuentas reales; ampliar la muestra por nicho con el asistente; el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
