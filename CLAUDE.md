@@ -3,7 +3,7 @@
 ## Propósito
 Investigación de mercado y prospección B2B de servicios digitales: web, SEO, redes y Google Ads para empresas medianas de Miami-Dade y Broward.
 Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puerta de «estudio de caso de embudo» por usuario, para B2B y B2C.
-  - Sin cuenta se ven solo cifras; con cuenta, empresas y contactos.
+  - Sin cuenta se ven las cifras y los 3 primeros resultados reales de cada lista; el resto queda cubierto, con «Solicitar consultoría completa» (/contact) o «Ver estudio completo». Con cuenta se ve todo (decisión del usuario, 2026-09-28).
   - El tablero de prospección se mantiene como vista detallada.
 
 ## Reglas de datos
@@ -74,6 +74,11 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
   - Cifras grandes en formato compacto: «$4,8 mil M» / «$4.8B».
   - La cabecera clara del tablero también va en la guía y el estudio (88 px; 72 px en móvil), con el menú por pasos (tecla M).
   - Pedidos del usuario: Google Business solo con enlace a Google Maps (sin Places API, de pago); entrega por fases.
+- Tablero de decisión (v8.1, estilo archivado):
+  - 6 mosaicos en rejilla de 3 columnas (2 en tablet y móvil), con borde superior de semáforo, y cada uno lleva a su panel.
+  - Cada panel lleva código `1.1–6.4` (chip `#9ec5f4` sobre `#06142a`), icono de línea, título, «Para decidir: …» y una lectura rápida.
+  - Semáforo: ok `#0fa383` · a vigilar `#e0b43a` · alerta `#ff8a70` · neutro `#9ec5f4`.
+  - Los paneles se generan con marcadores `§pan:clave§` y `cab()`.
 - Barra superior del tablero (estilo archivado): bloque claro `#f5f6f7`, tinta `#07080b`, que contrasta con el cuerpo negro. Lleva isotipo (3 barras `#FEFD55` sobre `#0c2539`), FUNNEL’26 (Archivo 800) con el subtítulo «Estudio de Mercado» (mono, versalitas), Menú, Mi cuenta (Perfil, Consultas PDF · historial, Suscripciones, Salir) y «Obtén tu potencial» → focoworking.com/discover (negro con texto amarillo). Sin pestañas. Cabecera alta (132 px) con la marca centrada y grande (isotipo ≤76 px, título ≤62 px); Menú a la izquierda; Mi cuenta y CTA a la derecha. Se compacta a 76 px al bajar. Línea azul de progreso.
 - Navegación: Menú a pantalla completa (botón magnético o tecla M) que se abre en círculo desde el botón, con secciones numeradas en tipografía grande (Archivo 600, tracking −0.035em), letras que ruedan al hover, las demás atenuadas a .28 y vista previa con cifra viva y número en contorno. Curva `cubic-bezier(.76,0,.24,1)`. Respeta reduced-motion. Referencia pedida: zalak-patel.com (no accesible desde el sandbox).
 - **Regla GoDaddy:** el hosting inyecta en cada HTML su script `img1.wsimg.com/traffic-assets/js/tccl.min.js` antes del primer `</body>`. Nunca poner `</body>`, `</html>`, `</head>`, `</script>` ni `<!--` dentro de un `<script>`: se escriben `<\/body>`. Si no, parte el script en dos («Unexpected end of input»). `construir.mjs` lo impide, y el deploy comprueba con `?diag=app` que la app llega intacta hasta `<!--f26-fin-app-->`. El servidor es LiteSpeed, con PHP 8.3.
@@ -109,4 +114,5 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - v7.1 (2026-09-26): guía conversacional con perfil, chips, resumen y ajuste en el resultado (focoworking/FOCO#35).
 - Census activo (2026-09-28): el secreto `CENSUS_API_KEY` está en FOCO, la instantánea de Florida cubre 67 condados y 63/63 NAICS, y CBP/ACS en vivo responden 200 desde GoDaddy. Overpass principal a veces falla (504); el motor pasa a kumi.systems.
 - v8 (2026-09-28): estudio de mercado en 6 pasos, mapa de oportunidad por ZIP, ventas y tendencia (QCEW + Economic Census), negocios con Google Maps y CSV, y cabecera con menú en el estudio (focoworking/FOCO#36).
+- v8.1 (2026-09-28): tablero de decisión, paneles identificados y vista gratuita con el top 3 (focoworking/FOCO#37).
 - Pendiente: la segunda fase podría sumar las ventas gravables del Florida DOR (Form 9/10) si se confirma su formato; guardar los estudios por usuario (historial en Mi cuenta); cuentas reales; ampliar la muestra por nicho con el asistente; el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
