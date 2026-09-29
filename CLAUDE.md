@@ -70,7 +70,7 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - Estudio en 6 pasos (v8, pedido por el usuario tomando como modelo el artículo de ENyD «Cómo hacer un estudio de mercado en 6 sencillos pasos»):
   - Los pasos son: Objetivos · Áreas a investigar · Fuentes (secundarias + primarias: campo y encuesta) · Competencia · Análisis (DAFO + embudo) · Conclusiones (veredicto 0–100 + decisiones + plan + legal).
   - El objetivo por defecto es «viabilidad».
-  - Mapa de oportunidad por ZIP: Leaflet de cdnjs con teselas de OSM invertidas a oscuro; burbujas en rampa azul y top 5 numerado. Con sesión, puntos de la competencia `#d95926` y de los clientes `#199e70`.
+  - Mapa de oportunidad por ZIP: Leaflet de cdnjs con teselas de OSM invertidas a oscuro. OSM exige Referer y la página envía no-referrer, así que la capa usa `referrerPolicy: 'strict-origin-when-cross-origin'`; tras 3 errores pasa a CARTO `dark_all` (focoworking/FOCO#40). burbujas en rampa azul y top 5 numerado. Con sesión, puntos de la competencia `#d95926` y de los clientes `#199e70`.
   - Veredicto: alta `#0fa383` ≥65, media `#e0b43a` 45–64, baja `#ff8a70`.
   - Cifras grandes en formato compacto: «$4,8 mil M» / «$4.8B».
   - La cabecera clara del tablero también va en la guía y el estudio (88 px; 72 px en móvil), con el menú por pasos (tecla M).
