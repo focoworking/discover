@@ -44,6 +44,10 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
   - Radio de 40 mi desde el dispositivo, con límite propio de espera y sin guardarse en el servidor.
   - Misma estructura para todos; solo cambia el contenido.
   - Para añadir un nicho nuevo hay que darlo de alta también en el tesauro.
+- Ayuda a la escritura (v8.4, pedido del usuario):
+  - Autocompletar en `#q`, `#e-q` y `#e-cli` con el vocabulario `VOCAB` (nichos, lugares y términos del tesauro).
+  - «¿Quisiste decir …?» con Damerau-Levenshtein (≤1 hasta 6 letras, ≤2 desde 7) y reducción de letras repetidas. Nunca se corrige sin que el usuario acepte («Sí, corregir»).
+  - Los sinónimos y similares NO se muestran en el caso: solo «Entendimos: <concepto>».
 - Estudio guiado (v6):
   - La búsqueda de la portada abre una guía de 4 pasos (qué vendes / a quién / dónde / objetivo + ticket y presupuesto).
   - El motor es `producto/funnel26/estudio.php` (`?estudio=1`). Las referencias de conversión están en `F26_REF`, con fuente, y el método en `research/metodos_funnel.md`.
@@ -123,4 +127,5 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - v8.1 (2026-09-28): tablero de decisión, paneles identificados y vista gratuita con el top 3 (focoworking/FOCO#37).
 - v8.2 (2026-09-28): introducción comercial en la portada (focoworking/FOCO#38).
 - v8.3 (2026-09-28): campaña completa como CTA final con captación de leads (focoworking/FOCO#39).
+- v8.4 (2026-09-29): autocompletar y corrección con permiso, sin sinónimos en pantalla (focoworking/FOCO#41).
 - Pendiente: ver los leads en Mi cuenta; la segunda fase podría sumar las ventas gravables del Florida DOR (Form 9/10) si se confirma su formato; guardar los estudios por usuario (historial en Mi cuenta); cuentas reales; ampliar la muestra por nicho con el asistente; el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
