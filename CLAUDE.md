@@ -31,10 +31,26 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - Filtros: condado, ciudad (chips con conteo o clic en el mapa), nicho, industria, estado web, prioridad y búsqueda, más el filtrado cruzado desde las donas.
 - Mapa: SVG propio con los condados de `mapa.js` (generado por `research/scripts/mapa_funnel26.mjs` con us-atlas, en el corredor urbano) y las ciudades de `data/coordenadas.py`. Debajo va la ficha de la ciudad elegida. Si se añade una ciudad nueva, hay que agregar sus coordenadas.
 - Nicho comercial: `research/scripts/nichos.py` (40 nichos). Si la fila trae su nicho explícito se respeta; si no, se aplican las reglas en orden. Los lotes nuevos van en `data/amp_*.json`, con el campo `nicho`.
-- Portada (estilo archivado): `/funnel26/` es una pantalla completa en ES/EN.
-  - Diseño: amanecer amarillo (radial `#fffcc4`→`#fefd55`→`#cdbb22`) sobre un planeta azul (`#1b5392`→`#06142a`) con borde de luz; en móvil, una luna arriba a la izquierda. Montserrat 300 para «Bienvenido a», 900 para FUNNEL’, y el «26» en `#c3b10b`.
-  - Buscador: blanco, con el isotipo gris `#6a7891` y un botón amarillo redondo.
-  - Introducción comercial (opción B, elegida por el usuario): «Vende más con datos, no con intuición.» / «Sell more with data, not guesswork.» Lleva un párrafo de lo que se obtiene en 2 minutos y las etiquetas Gratis para empezar · Datos oficiales · Resultados al instante, en tinta marino. En móvil, la portada lleva 84 px arriba y en pantallas bajas se oculta el párrafo.
+- Portada (estilo archivado, v9: opción B elegida por el usuario, 2026-09-29, inspirada en la estructura de lemarketinghub.com): landing editorial en ES/EN.
+  - Estilo: fondo crema `#f4f1ea`, papel `#fbfaf6`, líneas `#e2ddd2`, tinta marino `#0b1d3a`, gris `#5b6474`. Archivo 800–900 para titulares (tracking −0.035em) e Inter para el texto. El amarillo `#FEFD55` solo va en la acción principal, el subrayado del titular y la franja de cifras.
+  - Orden:
+    1. Barra con logo, secciones, ES/EN, cuenta y CTA.
+    2. Hero «Deja de adivinar quién te compra» con el buscador `#q` y una tarjeta de ejemplo del tablero (marcada como ilustrativa).
+    3. Marquesina de fuentes.
+    4. Recorrido «De desconocido a cliente» en 4 etapas.
+    5. Cómo funciona, en 3 pasos.
+    6. Gratis frente a campaña.
+    7. Cifras reales del build (`__CIFRAS__`).
+    8. Logos en blanco sobre marino.
+    9. Preguntas frecuentes.
+    10. Cierre marino con un segundo buscador.
+  - Animaciones (todas se apagan con reduced-motion):
+    - titular palabra a palabra y subrayado que se pinta;
+    - contadores y apariciones escalonadas al bajar;
+    - recorrido que se enciende en orden;
+    - tarjeta con inclinación 3D y botones magnéticos;
+    - marquesinas, preguntas con apertura suave y brillo en el cierre.
+  - La portada anterior (amanecer amarillo sobre planeta) queda retirada.
   - Búsqueda sin sesión: cifras agregadas (`?buscar=`, sin nombres), luego acceso con clave y tablero `?app=1&q=`.
   - Búsqueda con sesión: va directo al tablero.
   - «Crear cuenta»: acceso con clave + «Solicita tu acceso» → /contact.
@@ -128,4 +144,5 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - v8.2 (2026-09-28): introducción comercial en la portada (focoworking/FOCO#38).
 - v8.3 (2026-09-28): campaña completa como CTA final con captación de leads (focoworking/FOCO#39).
 - v8.4 (2026-09-29): autocompletar y corrección con permiso, sin sinónimos en pantalla (focoworking/FOCO#41).
+- v9 (2026-09-29): portada nueva, opción B (focoworking/FOCO#42).
 - Pendiente: ver los leads en Mi cuenta; la segunda fase podría sumar las ventas gravables del Florida DOR (Form 9/10) si se confirma su formato; guardar los estudios por usuario (historial en Mi cuenta); cuentas reales; ampliar la muestra por nicho con el asistente; el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
