@@ -53,7 +53,8 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
   - La portada anterior (amanecer amarillo sobre planeta) queda retirada.
   - Búsqueda sin sesión: cifras agregadas (`?buscar=`, sin nombres), luego acceso con clave y tablero `?app=1&q=`.
   - Búsqueda con sesión: va directo al tablero.
-  - «Crear cuenta»: acceso con clave + «Solicita tu acceso» → /contact.
+  - «Crear cuenta»: acceso con clave + «Pedir acceso» → https://focoworking.com/quote.html.
+  - Una sola búsqueda gratis por IP (v9.1, pedido del usuario): sin sesión, `?estudio=1` guarda un hash sha256 con sal de la IP en `../f26-datos/gratis/` durante 365 días (`F26_GRATIS_DIAS`). Ajustar el mismo estudio no cuenta. Una consulta distinta recibe 402 y se abre el diálogo de clave con el aviso y el botón «Pedir acceso». En las pruebas locales hay que borrar `f26-datos/gratis`.
 - Búsqueda (v5.1): `producto/funnel26/tesauro.js` (conceptos por nicho con sinónimos ES/EN y similares; sectores NAICS; palabras vacías) y `busqueda.js` (motor), portado a PHP en `acceso.php` (`f26_buscar`); si cambia uno, cambia el otro y hay que volver a comprobar la paridad.
   - «Miami» a secas = condado Miami-Dade.
   - Un concepto concreto manda sobre el sector.
@@ -145,4 +146,5 @@ Desde la v6 (decisión del usuario, 2026-09-26), Funnel 26 es también una puert
 - v8.3 (2026-09-28): campaña completa como CTA final con captación de leads (focoworking/FOCO#39).
 - v8.4 (2026-09-29): autocompletar y corrección con permiso, sin sinónimos en pantalla (focoworking/FOCO#41).
 - v9 (2026-09-29): portada nueva, opción B (focoworking/FOCO#42).
+- v9.1 (2026-09-29): una búsqueda gratis por IP y «Pedir acceso» → quote.html (focoworking/FOCO#43).
 - Pendiente: ver los leads en Mi cuenta; la segunda fase podría sumar las ventas gravables del Florida DOR (Form 9/10) si se confirma su formato; guardar los estudios por usuario (historial en Mi cuenta); cuentas reales; ampliar la muestra por nicho con el asistente; el estudio solo cubre Miami-Dade/Broward, así que fuera de ahí el radio avisa y muestra todo; ampliar la cobertura; tablero en inglés; cuentas individuales y suscripciones reales si el tablero se vende a clientes; validar en Sunbiz los 38 prospectos A; cubrir Design District, Downtown, Little Haiti y fábricas de confección; verificar los 18 "No verificado"; reducir el peso de Hialeah (48/285) y cubrir Miami Lakes, Cutler Bay, Lauderhill y Deerfield, además de limpieza, concesionarios y limusinas; guardar las etapas del pipeline en el servidor; confirmar en producción la consulta BTR en vivo; buscar la capa BTR de Broward.
